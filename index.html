@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <!-- Aframe読み込む -->
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <!-- aframe-extras読み込み -->
+    <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.2.0/dist/aframe-extras.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+    <style>
+      .button {
+        position: absolute;
+        bottom: 20px;
+        z-index: 999;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ARjsの紐付け embedded arjs="debugUIEnabled:false;" -->
+    <a-scene id="scine" embedded arjs="debugUIEnabled:false;">
+      <a-camera
+        position="0 0 0"
+      ></a-camera>
+      <a-marker preset="hiro">
+        <!-- マーカーの場所に箱を置く-->
+        <a-box position="0 0.5 0" wireframe="true"></a-box>
+      </a-marker>
+      <a-assets>
+        <a-asset-item id="model" src="./robot.glb"></a-asset-item>
+      </a-assets>
+      <a-entity
+        position="0 0 3"
+        id="modelitem"
+        gltf-model="#model"
+        scale="1 1 1"
+        animation-mixer="clip: idle; loop: once"
+        animation-mixer
+      />
+      <a-box id="box" position="-1 0 3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="0 0 4" radius="0.65" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="1 0 5" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane position="1 0 1" rotation="-90 0 0" width="30" height="30" color="#7BC8A4"></a-plane>
+      <a-sky color="#000"></a-sky>
+    </a-scene>
+    <div class="buttonArea">
+      <button id="nextbutton" class="button">クリック</button>
+    </div>
+
+    <script>
+      const nextButtonComponent = () => ({
+        init() {
+          const animationList = ['idle', 'pockets', 'hiphop', 'chicken']
+
+          const model = document.getElementById('model')
+          const nextButton = document.getElementById('nextbutton')
+
+          nextButton.style.display = 'block'
+
+          let idx = 1  // Start with the 2nd animation because the model starts with idle animation
+          const nextAnimation = () => {
+            model.setAttribute('animation-mixer', {
+              clip: animationList[idx],
+              loop: 'once',
+              crossFadeDuration: 0.4,
+            })
+            idx = (idx + 1) % animationList.length
+          }
+          nextButton.onclick(function() {
+            console.log('click')
+            nextAnimation
+          }) // Switch to the next animation when the button is pressed.
+        },
+      })
+      AFRAME.registerComponent('next-button', nextButtonComponent())
+
+      // const box = document.getElementById('box')
+      // const scine = document.getElementById('scine')
+
+      // console.log(scine.object3D)
+      // console.log(box.object3D)
+
+      // box.object3D.el.addEventListener('click', function() {
+      //   console.log('click')
+      // })
+      // box.setAttribute('class', 'box');
+      // box.addEventListener('physicscollided', function (event) {
+      //   console.log('Entity collided with', event.detail.collidingEntity);
+      // });
+    </script>
+  </body>
+</html>
